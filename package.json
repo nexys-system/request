@@ -1,0 +1,38 @@
+{
+  "name": "@nexys/request",
+  "version": "1.0.0",
+  "description": "server side request wrapper",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Nexysweb/request.git"
+  },
+  "keywords": [
+    "request",
+    "node",
+    "typescript"
+  ],
+  "author": "Nexys",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Nexysweb/request/issues"
+  },
+  "homepage": "https://github.com/Nexysweb/request#readme",
+  "dependencies": {
+    "@nexys/http": "^1.0.0",
+    "@types/request-promise-native": "^1.0.17",
+    "request-promise-native": "^1.0.8"
+  },
+  "devDependencies": {
+    "@types/jest": "^25.2.3",
+    "jest": "^26.0.1",
+    "nock": "^12.0.3",
+    "ts-jest": "^25.3.1",
+    "tsc-watch": "^4.2.3",
+    "typescript": "^3.9.3"
+  }
+}
