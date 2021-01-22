@@ -27,8 +27,8 @@
   "homepage": "https://github.com/Nexysweb/request#readme",
   "dependencies": {
     "@nexys/http": "^1.0.0",
-    "@types/request-promise-native": "^1.0.17",
-    "request-promise-native": "^1.0.8"
+    "@types/node-fetch": "^2.5.8",
+    "node-fetch": "^2.6.1"
   },
   "devDependencies": {
     "@types/jest": "^25.2.3",

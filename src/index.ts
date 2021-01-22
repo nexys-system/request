@@ -1,4 +1,4 @@
-import Rpn from "request-promise-native";
+import fetch from "node-fetch";
 import { HTTP } from "@nexys/http";
 
 export const toQueryString = (query?: { [k: string]: string }): string => {
@@ -39,23 +39,24 @@ export const exec = async <InShape = { [k: string]: any }, OutShape = any>(
   host: string,
   path: string,
   method: Method = "GET",
-  body?: InShape,
+  data?: InShape,
   headers?: { [k: string]: string },
   query?: { [k: string]: string }
 ): Promise<OutShape> => {
   const urlFinal = getUrlFinal(host, path, query);
 
-  const options: Rpn.RequestPromiseOptions = {
+  const body: string | undefined = data && JSON.stringify(data);
+
+  const options = {
     headers,
     method,
     body,
-    json: true,
-    resolveWithFullResponse: true,
-    simple: false,
   };
 
   try {
-    const { statusCode, body, _headers } = await Rpn(urlFinal, options);
+    const r = await fetch(urlFinal, options);
+    const statusCode = r.status;
+    const body = await r.json();
 
     if (isStatusSuccess(statusCode)) {
       return body;
