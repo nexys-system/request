@@ -1,6 +1,6 @@
 {
   "name": "@nexys/request",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "server side request wrapper",
   "main": "dist/index.js",
   "files": [
