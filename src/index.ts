@@ -41,7 +41,7 @@ export const exec = async <InShape = { [k: string]: any }, OutShape = any>(
   data?: InShape,
   headers: T.Headers = headersDefault,
   query?: T.Query,
-  returnType: ReturnType | undefined = "json"
+  returnType?: ReturnType
 ): Promise<OutShape> => {
   const urlFinal = Utils.getUrlFinal(host, path, query);
 
