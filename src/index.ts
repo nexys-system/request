@@ -13,8 +13,8 @@ type ReturnType = "text" | "json" | "arrayBuffer" | "blob";
 
 const bodyToOut = (
   r: f.Response,
-  type: ReturnType
-): Promise<any | Blob | ArrayBuffer | string> => {
+  type?: ReturnType
+): Promise<any | Blob | ArrayBuffer | string> | NodeJS.ReadableStream => {
   if (type === "json") {
     return r.json();
   }
@@ -27,7 +27,11 @@ const bodyToOut = (
     return r.arrayBuffer();
   }
 
-  return r.text();
+  if (type === "text") {
+    return r.text();
+  }
+
+  return r.body;
 };
 
 export const exec = async <InShape = { [k: string]: any }, OutShape = any>(
@@ -37,7 +41,7 @@ export const exec = async <InShape = { [k: string]: any }, OutShape = any>(
   data?: InShape,
   headers: T.Headers = headersDefault,
   query?: T.Query,
-  returnType: ReturnType = "json"
+  returnType: ReturnType | undefined = "json"
 ): Promise<OutShape> => {
   const urlFinal = Utils.getUrlFinal(host, path, query);
 
@@ -73,15 +77,15 @@ export const exec2 = async <InShape = { [k: string]: any }, OutShape = any>(
   path: string,
   {
     method = "GET",
+    data,
     headers = headersDefault,
     returnType = "json",
     query,
-    data,
   }: {
     method: T.Method;
     data: InShape;
     headers?: T.Headers;
-    returnType?: ReturnType;
+    returnType?: ReturnType | undefined;
     query?: T.Query;
   }
 ): Promise<OutShape> =>
