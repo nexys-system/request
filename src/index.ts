@@ -1,49 +1,17 @@
 import fetch from "node-fetch";
 import { HTTP } from "@nexys/http";
-
-export const toQueryString = (query?: { [k: string]: string }): string => {
-  if (!query) {
-    return "";
-  }
-
-  const entries = Object.entries(query);
-
-  if (entries.length === 0) {
-    return "";
-  }
-
-  const queryString = Object.entries(query)
-    .map(([k, v]) => encodeURIComponent(k) + "=" + encodeURIComponent(v))
-    .join("&");
-
-  return "?" + queryString;
-};
-
-const getUrlFinal = (
-  host: string,
-  path: string = "/",
-  query?: { [k: string]: string }
-): string => {
-  return host + path + toQueryString(query);
-};
-
-type Method = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
-
-/**
- * check if returned is a successful status, ie 2xx
- */
-export const isStatusSuccess = (statusCode: number): boolean =>
-  Math.floor(statusCode / 100) === 2;
+import * as T from "./type";
+import * as U from "./utils";
 
 export const exec = async <InShape = { [k: string]: any }, OutShape = any>(
   host: string,
   path: string,
-  method: Method = "GET",
+  method: T.Method = "GET",
   data?: InShape,
-  headers?: { [k: string]: string },
-  query?: { [k: string]: string }
+  headers: T.Headers = { "content-type": "application/json" },
+  query?: T.Query
 ): Promise<OutShape> => {
-  const urlFinal = getUrlFinal(host, path, query);
+  const urlFinal = U.getUrlFinal(host, path, query);
 
   const body: string | undefined = data && JSON.stringify(data);
 
@@ -58,7 +26,7 @@ export const exec = async <InShape = { [k: string]: any }, OutShape = any>(
     const statusCode = r.status;
     const body = await r.json();
 
-    if (isStatusSuccess(statusCode)) {
+    if (U.isStatusSuccess(statusCode)) {
       return body;
     }
 
@@ -70,3 +38,16 @@ export const exec = async <InShape = { [k: string]: any }, OutShape = any>(
     throw Error(err);
   }
 };
+
+const headersDefault: T.Headers = { "content-type": "application/json" };
+
+export const exec2 = async <InShape = { [k: string]: any }, OutShape = any>(
+  host: string,
+  path: string,
+  {
+    method = "GET",
+    headers = headersDefault,
+    query,
+    data,
+  }: { method: T.Method; data: InShape; headers: T.Headers; query?: T.Query }
+): Promise<OutShape> => exec(host, path, method, data, headers, query);
