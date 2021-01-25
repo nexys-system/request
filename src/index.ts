@@ -58,8 +58,8 @@ export const exec2 = async <InShape = { [k: string]: any }, OutShape = any>(
   }: {
     method: T.Method;
     data: InShape;
-    headers: T.Headers;
-    returnJson: boolean;
+    headers?: T.Headers;
+    returnJson?: boolean;
     query?: T.Query;
   }
 ): Promise<OutShape> =>
