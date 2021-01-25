@@ -1,4 +1,5 @@
 import fetch from "node-fetch";
+import * as f from "node-fetch";
 import { HTTP } from "@nexys/http";
 import * as T from "./type";
 import * as Utils from "./utils";
@@ -8,6 +9,27 @@ export { Utils };
 const headersDefault: T.Headers = { "content-type": "application/json" };
 const methodDefault: T.Method = "GET";
 
+type ReturnType = "text" | "json" | "arrayBuffer" | "blob";
+
+const bodyToOut = (
+  r: f.Response,
+  type: ReturnType
+): Promise<any | Blob | ArrayBuffer | string> => {
+  if (type === "json") {
+    return r.json();
+  }
+
+  if (type === "blob") {
+    return r.blob();
+  }
+
+  if (type === "arrayBuffer") {
+    return r.arrayBuffer();
+  }
+
+  return r.text();
+};
+
 export const exec = async <InShape = { [k: string]: any }, OutShape = any>(
   host: string,
   path: string,
@@ -15,7 +37,7 @@ export const exec = async <InShape = { [k: string]: any }, OutShape = any>(
   data?: InShape,
   headers: T.Headers = headersDefault,
   query?: T.Query,
-  returnJson: boolean = true
+  returnType: ReturnType = "json"
 ): Promise<OutShape> => {
   const urlFinal = Utils.getUrlFinal(host, path, query);
 
@@ -30,7 +52,7 @@ export const exec = async <InShape = { [k: string]: any }, OutShape = any>(
   try {
     const r = await fetch(urlFinal, options);
     const statusCode = r.status;
-    const body = await (returnJson ? r.json() : r.text());
+    const body = await bodyToOut(r, returnType);
 
     if (Utils.isStatusSuccess(statusCode)) {
       return body;
@@ -52,18 +74,18 @@ export const exec2 = async <InShape = { [k: string]: any }, OutShape = any>(
   {
     method = "GET",
     headers = headersDefault,
-    returnJson = true,
+    returnType = "json",
     query,
     data,
   }: {
     method: T.Method;
     data: InShape;
     headers?: T.Headers;
-    returnJson?: boolean;
+    returnType?: ReturnType;
     query?: T.Query;
   }
 ): Promise<OutShape> =>
-  exec(host, path, method, data, headers, query, returnJson);
+  exec(host, path, method, data, headers, query, returnType);
 
 // alias for exec2
 export const r = exec2;
