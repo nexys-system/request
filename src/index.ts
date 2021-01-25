@@ -85,7 +85,7 @@ export const exec2 = async <InShape = { [k: string]: any }, OutShape = any>(
     method: T.Method;
     data: InShape;
     headers?: T.Headers;
-    returnType?: ReturnType | undefined;
+    returnType: ReturnType | undefined;
     query?: T.Query;
   }
 ): Promise<OutShape> =>
