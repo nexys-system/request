@@ -1,17 +1,22 @@
 import fetch from "node-fetch";
 import { HTTP } from "@nexys/http";
 import * as T from "./type";
-import * as U from "./utils";
+import * as Utils from "./utils";
+
+export { Utils };
+
+const headersDefault: T.Headers = { "content-type": "application/json" };
+const methodDefault: T.Method = "GET";
 
 export const exec = async <InShape = { [k: string]: any }, OutShape = any>(
   host: string,
   path: string,
-  method: T.Method = "GET",
+  method: T.Method = methodDefault,
   data?: InShape,
-  headers: T.Headers = { "content-type": "application/json" },
+  headers: T.Headers = headersDefault,
   query?: T.Query
 ): Promise<OutShape> => {
-  const urlFinal = U.getUrlFinal(host, path, query);
+  const urlFinal = Utils.getUrlFinal(host, path, query);
 
   const body: string | undefined = data && JSON.stringify(data);
 
@@ -26,7 +31,7 @@ export const exec = async <InShape = { [k: string]: any }, OutShape = any>(
     const statusCode = r.status;
     const body = await r.json();
 
-    if (U.isStatusSuccess(statusCode)) {
+    if (Utils.isStatusSuccess(statusCode)) {
       return body;
     }
 
@@ -39,8 +44,7 @@ export const exec = async <InShape = { [k: string]: any }, OutShape = any>(
   }
 };
 
-const headersDefault: T.Headers = { "content-type": "application/json" };
-
+// same as exec, but better interface
 export const exec2 = async <InShape = { [k: string]: any }, OutShape = any>(
   host: string,
   path: string,
@@ -51,3 +55,6 @@ export const exec2 = async <InShape = { [k: string]: any }, OutShape = any>(
     data,
   }: { method: T.Method; data: InShape; headers: T.Headers; query?: T.Query }
 ): Promise<OutShape> => exec(host, path, method, data, headers, query);
+
+// alias for exec2
+export const r = exec2;
