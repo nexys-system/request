@@ -9,7 +9,7 @@ export { Utils };
 const headersDefault: T.Headers = { "content-type": "application/json" };
 const methodDefault: T.Method = "GET";
 
-type ReturnType = "text" | "json" | "arrayBuffer" | "blob";
+type ReturnType = "text" | "json" | "arrayBuffer" | "blob" | "stream";
 
 const bodyToOut = (
   r: f.Response,
@@ -27,11 +27,11 @@ const bodyToOut = (
     return r.arrayBuffer();
   }
 
-  if (type === "text") {
-    return r.text();
+  if (type === "stream") {
+    return r.body;
   }
 
-  return r.body;
+  return r.text();
 };
 
 export const exec = async <InShape = { [k: string]: any }, OutShape = any>(
@@ -41,7 +41,7 @@ export const exec = async <InShape = { [k: string]: any }, OutShape = any>(
   data?: InShape,
   headers: T.Headers = headersDefault,
   query?: T.Query,
-  returnType?: ReturnType
+  returnType: ReturnType = "json"
 ): Promise<OutShape> => {
   const urlFinal = Utils.getUrlFinal(host, path, query);
 
@@ -85,7 +85,7 @@ export const exec2 = async <InShape = { [k: string]: any }, OutShape = any>(
     method: T.Method;
     data: InShape;
     headers?: T.Headers;
-    returnType: ReturnType | undefined;
+    returnType?: ReturnType;
     query?: T.Query;
   }
 ): Promise<OutShape> =>
